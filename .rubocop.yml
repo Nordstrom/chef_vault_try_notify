@@ -22,3 +22,18 @@ Style/RegexpLiteral:
 Style/AlignParameters:
   Exclude:
     - '**/Gemfile'
+
+Style/HashSyntax:
+  Enabled: false
+
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*.rb'
+
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/AbcSize:
+  Max: 20
+  Exclude:
+    - 'spec/**/*.rb'

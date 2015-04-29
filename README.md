@@ -7,7 +7,8 @@ the chef-vault secrets your cookbook needs are available.  If the vault
 items can be decrypted, the resource takes no action.  If the secrets
 cannot be decrypted (perhaps because this is an autoscaled node and the
 vault has not yet been refreshed), the resource calls a ruby block which
-can take whatever action is appropriate to get the secrets encrypted.
+can take whatever action is appropriate to refresh the vault for the new
+node.
 
 ## Use Case
 
@@ -61,7 +62,7 @@ Prior to using a chef-vault secret, declare a resource to test if the secrets
 are available:
 
     chef_vault_try_notify 'web server secrets' do
-      vault_items ssl: %w(foo bar), password: %w(baz wibble)
+      vault_items ['foo/bar', 'baz/wibble']
       on_failure do |state|
         extend ChefVaultTryNotify::Helper
         sns_notify(
@@ -78,7 +79,7 @@ action.
 If either secret cannot be decrypted, the `on_failure` block is called with a state
 object describing the attempted decryption (number of tries so far, etc.).  In the
 example above, the helper function `sns_notify` is used to send an AWS SNS notification
-to a topic.
+to a topic (see below for details).
 
 The resource will then retry the decryption, by default waiting for 10 seconds
 and retrying up to 30 times.  Each time the decryption fails, the `on_failure`
@@ -116,12 +117,31 @@ There are no attributes defined by this cookbook.
 This resource tests if it can decrypt a set of vault items, and calls a ruby block
 if it cannot.
 
+```
+chef_vault_try_notify 'my_app' do
+  vault_items ['one/two', 'three/four']
+  max_tries 10
+  wait_period 30
+  on_failure { |state| ... }
+end
+```
+
+The resource supports only one action: `test_secrets`
+
+The resource has the following parameters:
+
+* name: a descriptive name for this set of vault items.  Defaults to the name of the resource
+* vault_items: an array of strings, each describing a vault item to attempt to decrypt in the form "vaultname/itemname"
+* max_tries: the maximum number of times to attempt decryption.  Defaults to 30
+* wait_period: how long (in seconds) to wait between attempts to decrypt.  Defaults to 10
+* on_failure: a ruby block that will be called if any of the vault items cannot be decrypted.  It is passed a state object (described below)
+
 #### Ruby Block Context
 
 The `on_failure` ruby block is passed a state object that describes the attempt to
 decrypt the vault items.  The available methods are:
 
-* vault_items: a hash of the secrets which cannot be decrypted (structured the same as the `vault_items` attribute)
+* failed_vault_items: an array of vault items which could not be decrypted (structured the same as the `vault_items` attribute)
 * tries: the number of times decryption has been attempted unsuccessfully
 * max_tries: the maximum number of times decryption will be attempted before the resource fails
 * wait_period: how long (in seconds) the resource waits between attempts to decrypt
@@ -159,7 +179,7 @@ the scope of this README, so please refer to the [AWS documentation](http://docs
 To use `sns_notify`, you should also depend on the [aws cookbook](https://supermarket.chef.io/cookbooks/aws)
 and include the `aws` recipe somewhere in order to install the `aws-sdk` gem.
 
-The notification send to the topic is a JSON document similar to this:
+The notification send to the topic is a JSON document structured like this:
 
 ```
 {
@@ -174,28 +194,43 @@ The notification send to the topic is a JSON document similar to this:
   "max_tries": 30,
   "wait_period": 10,
   "waiting_for": 30,
-  "vault_items": {
-    "ssl": ["foo", "bar"],
-    "password": ["baz", "wibble"]
-  }
+  "failed_vault_items": ['foo/bar', 'baz/wibble']
 }
 ```
 
-This is hopefully enough information for whatever receives the notification to
+This is (hopefully) enough information for whatever receives the notification to
 authenticate the request and decide whether it should refresh the vault or not.
 
 ## Future Enhancements
 
-PRs to provide support for other notification services, especially those of other
+PRs to provide helpers for other notification services, especially those of other
 cloud providers are welcome.
 
 ## Author
 
-Nordstrom, Inc.
+James FitzGibbon - james.i.fitzgibbon@nordstrom.com - Nordstrom, Inc.
 
 ## License
 
-Copyright (c) 2015 Nordstrom, Inc., All Rights Reserved.
+Copyright (c) 2015 Nordstrom, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 
 ## Template Version
 

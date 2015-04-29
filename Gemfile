@@ -10,25 +10,11 @@ end
 
 group :test do
   gem 'foodcritic', '~> 4.0'
-  gem 'chefspec', '~> 4.1'
+  gem 'chefspec', '~> 4.2'
   gem 'ci_reporter_rspec', '~> 1.0'
-  gem 'test-kitchen', '~> 1.2'
-  gem 'kitchen-vagrant', '~> 0.15'
-  # log_switch v1.0.0 breaks tailor v1.4.0 but tailor
-  # does a >= pin; we add a ~> pin for now to keep us
-  # on the 0.4.x release
-  gem 'log_switch', '~> 0.4'
-  gem 'tailor', '~> 1.4'
-  # use our forked version until
-  # https://github.com/berkshelf/berkshelf/pull/1393 has been accepted
-  gem 'berkshelf', '~> 3.2',
-    git: 'https://github.com/Nordstrom/berkshelf.git',
-    branch: 'use_httpclient_instead_of_nethttp'
-  # use our forked version until
-  # https://github.com/berkshelf/berkshelf-api-client/pull/5 has been accepted
-  gem 'berkshelf-api-client', '~> 1.2',
-    git: 'https://github.com/Nordstrom/berkshelf-api-client.git',
-    branch: 'use_httpclient_instead_of_nethttp'
+  gem 'test-kitchen', '~> 1.4'
+  gem 'kitchen-vagrant', '~> 0.16'
+  gem 'berkshelf', '~> 3.2'
   # pin to 2.8 series until guard-foodcritic has been updated for v2 API
   gem 'guard', '~> 2.8.2'
   # pin to 4.3 series until guard-foodcritic has been updated for v2 API
@@ -38,6 +24,9 @@ group :test do
   gem 'rubocop', '~> 0.28.0'
   gem 'guard-rubocop', '~> 1.1'
   gem 'ruby_gntp', '~> 0.3'
+  gem 'chef-vault', '~> 2.5'
+  gem 'aws-sdk', '~> 2.0'
+  gem 'chef-vault-testfixtures', '~> 0.4'
 end
 
 # load local overrides

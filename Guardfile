@@ -13,18 +13,6 @@ guard :foodcritic, cookbook_paths: '.', cli: '-f any -X spec -X test -X features
   watch(%r{^metadata\.rb$})
 end
 
-# automatically runs Tailor
-guard :rake, all_on_start: true, task: :tailor do
-  watch(%r{^spec/recipes/.+_spec\.rb$})
-  watch(%r{^spec/spec_helper\.rb$})
-  watch(%r{^attributes/.+\.rb$})
-  watch(%r{^resources/.+\.rb$})
-  watch(%r{^providers/.+\.rb$})
-  watch(%r{^libraries/.+\.rb$})
-  watch(%r{^recipes/.+\.rb$})
-  watch(%r{^metadata\.rb$})
-end
-
 # automatically runs Rubocop
 guard :rubocop, all_on_start: true, cli: ['-f', 'p', '-D'] do
   watch(%r{^attributes/.+\.rb$})
@@ -43,13 +31,14 @@ end
 # automatically runs ChefSpec tests
 rspec_command = ENV.key?('DISABLE_PRY_RESCUE') ? 'rspec' : 'rescue rspec'
 guard :rspec, all_on_start: true, cmd: "bundle exec #{rspec_command}" do
-  watch(%r{^spec/recipes/.+_spec\.rb$})
+  watch(%r{^spec/cookbooks/.+?/.+_spec\.rb$})
+  watch(%r{^spec/libraries/.+_spec\.rb$})
   watch(%r{^spec/spec_helper\.rb$}) { 'spec' }
   watch(%r{^attributes/.+\.rb$})    { 'spec' }
   watch(%r{^resources/.+\.rb$})     { 'spec' }
   watch(%r{^providers/.+\.rb$})     { 'spec' }
   watch(%r{^libraries/.+\.rb$})     { 'spec' }
-  watch(%r{^recipes/(.+)\.rb$})     { |m| "spec/recipes/#{m[1]}_spec.rb" }
+  watch(%r{^recipes/(.+)\.rb$})     { |m| "spec/cookbooks/chef_vault_try_notify/recipes/#{m[1]}_spec.rb" }
 end
 
 # load local overrides

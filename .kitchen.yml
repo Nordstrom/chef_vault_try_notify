@@ -15,7 +15,6 @@ driver_config:
   <%= envvar %>: '<%= ENV[envvar] %>'
 <% end %>
 <% end %>
-
 <% end %>
 
 provisioner:
@@ -27,14 +26,15 @@ provisioner:
 <% end %>
 <% end %>
 
-
 platforms:
-  - name: rhel-6.5-v1
-    driver_config:
-      box: RHEL6_5_v1
-      box_url: http://y0319p297.nordstrom.net/downloads/vagrant-RHEL6_5_v1.box
+  - name: ubuntu-14.04
 
 suites:
-  - name: default
+  - name: decrypt_ok
     run_list:
-      - recipe[chef_vault_try_notify::default]
+      - recipe[secret_waiter::decrypt_ok]
+  # this suite is expected to fail (because the secrets can't be decrypted)
+  # but TK doesn't have a way to assert that expectation
+  - name: decrypt_failure
+    run_list:
+      - recipe[secret_waiter::decrypt_failure]
