@@ -50,7 +50,7 @@ module ChefVaultTryNotify
         max_tries: state.max_tries,
         wait_period: state.wait_period,
         waiting_for: state.waiting_for,
-        vault_items: state.vault_items
+        failed_vault_items: state.failed_vault_items
       }.to_json
     end
   end

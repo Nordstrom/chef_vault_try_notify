@@ -20,8 +20,7 @@ action :test_secrets do
     state = OpenStruct.new(
       tries: 0,
       max_tries: new_resource.max_tries,
-      wait_period: new_resource.wait_period,
-      waiting_for: Time.now - start_time
+      wait_period: new_resource.wait_period
     )
     done = false
     until done
@@ -44,6 +43,7 @@ action :test_secrets do
       else
         Chef::Log.warn 'could not decrypt secrets for vault items ' \
           "#{state.failed_vault_items.join(',')}"
+        state.waiting_for = (Time.now - start_time).to_i
         new_resource.on_failure.call(state)
         sleep new_resource.wait_period
       end

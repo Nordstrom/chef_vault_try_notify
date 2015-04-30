@@ -17,3 +17,7 @@ def on_failure(arg = nil, &block)
   arg ||= block
   set_or_return(:on_failure, arg, :kind_of => Proc)
 end
+
+def after_created
+  self.run_action(:test_secrets)
+end

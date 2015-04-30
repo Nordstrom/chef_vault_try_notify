@@ -48,12 +48,6 @@ To your cookbook's metadata.rb, add this line:
 
     depends 'chef_vault_try_notify', '~> 0.1'
 
-This cookbook also requires that you use the `chef_vault_item` helper
-from the [chef-vault cookbook](https://supermarket.chef.io/cookbooks/chef-vault)
-instead of calling `ChefVault::Item.load` directly.  This ensures that
-vault access happens at converge time rather than compile time.  This
-cookbook depends on `chef-vault`, so you do not need to include it yourself.
-
 Then add this line to any recipe that requires chef-vault secrets:
 
     include_recipe 'chef_vault_try_notify'
@@ -72,14 +66,16 @@ are available:
       end
     end
 
-This resource will attempt to decrypt the vault items `bar` in the `foo` vault
-and `wibble` in the `baz` vault.  If they can be decrypted, it takes no further
-action.
+At compile time, this resource will attempt to decrypt the vault items `bar`
+in the `foo` vault and `wibble` in the `baz` vault.  If they can be decrypted,
+it takes no further action.  You can then safely retrieve your secrets:
+
+    vaultitem = chef_vault_item('foo', 'bar')
 
 If either secret cannot be decrypted, the `on_failure` block is called with a state
 object describing the attempted decryption (number of tries so far, etc.).  In the
-example above, the helper function `sns_notify` is used to send an AWS SNS notification
-to a topic (see below for details).
+example above, the helper function `sns_notify` is used to send an AWS SNS
+notification to a topic (see below for details).
 
 The resource will then retry the decryption, by default waiting for 10 seconds
 and retrying up to 30 times.  Each time the decryption fails, the `on_failure`
