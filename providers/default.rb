@@ -26,7 +26,7 @@ action :test_secrets do
     until done
       state.tries += 1
       if state.tries > state.max_tries
-        return Chef::Application.fatal! 'could not decrypt secrets for vault items ' \
+        fail 'unable to decrypt secrets for vault items ' \
           "#{state.failed_vault_items.join(',')} after #{state.max_tries} attempts"
       end
       state.failed_vault_items = []
@@ -39,8 +39,12 @@ action :test_secrets do
         end
       end
       if state.failed_vault_items.empty?
+        ::ChefVaultTryNotify::GuardState.instance.ok[new_resource.name] = true
         done = true
       else
+        # if guard is true, we return on failure - the lack of an entry
+        # in the GuardState singleton is used later
+        return if new_resource.guard
         Chef::Log.warn 'could not decrypt secrets for vault items ' \
           "#{state.failed_vault_items.join(',')}"
         state.waiting_for = (Time.now - start_time).to_i

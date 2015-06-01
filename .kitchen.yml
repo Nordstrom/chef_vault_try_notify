@@ -19,10 +19,12 @@ driver_config:
 
 provisioner:
   name: chef_zero
+<% if proxy_vars.size > 0 %>
   client_rb:
 <% %w(http_proxy https_proxy no_proxy).each do |envvar| %>
 <% if ENV.key?(envvar) %>
     <%= envvar %>: '<%= ENV[envvar] %>'
+<% end %>
 <% end %>
 <% end %>
 
@@ -38,3 +40,6 @@ suites:
   - name: decrypt_failure
     run_list:
       - recipe[secret_waiter::decrypt_failure]
+  - name: guard
+    run_list:
+      - recipe[secret_waiter::guard]

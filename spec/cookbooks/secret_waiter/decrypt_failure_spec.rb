@@ -33,10 +33,7 @@ RSpec.describe 'secret_waiter::decrypt_failure' do
       .to receive(:warn)
       .twice
       .with(/could not decrypt secrets/)
-    expect(Chef::Application)
-      .to receive(:fatal!)
-      .with(/after 2 attempts/)
-      .and_return(false)
-    expect(chef_run).to test_chef_vault_secrets('my_secrets')
+    expect { chef_run }
+      .to raise_error(RuntimeError, /unable to decrypt secrets.+after 2 attempts/)
   end
 end

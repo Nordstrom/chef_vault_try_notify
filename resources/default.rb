@@ -12,6 +12,7 @@ attribute :name, :kind_of => String, :name_attribute => true
 attribute :vault_items, :kind_of => Array, :required => true
 attribute :max_tries, :kind_of => Fixnum, :default => 30
 attribute :wait_period, :kind_of => Fixnum, :default => 10
+attribute :guard, :kind_of => [TrueClass, FalseClass], :default => false
 
 def on_failure(arg = nil, &block)
   arg ||= block
@@ -19,5 +20,5 @@ def on_failure(arg = nil, &block)
 end
 
 def after_created
-  self.run_action(:test_secrets)
+  run_action(:test_secrets)
 end

@@ -4,3 +4,6 @@
 #
 
 include_recipe 'chef-vault'
+
+Chef::Recipe.send(:include, ChefVaultTryNotify::GuardHelper)
+Chef::Resource.send(:include, ChefVaultTryNotify::GuardHelper)
