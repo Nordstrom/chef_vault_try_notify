@@ -2,9 +2,14 @@ require 'aws-sdk'
 require 'ostruct'
 
 require_relative '../../libraries/helper'
+require_relative '../../libraries/guard_state'
 
 class TestSnsHelper
   include ChefVaultTryNotify::Helper
+end
+
+class TestGuardHelper
+  include ChefVaultTryNotify::GuardHelper
 end
 
 RSpec.describe ChefVaultTryNotify::Helper do
@@ -93,5 +98,19 @@ RSpec.describe ChefVaultTryNotify::Helper do
         topic: 'arn:aws:sns:us-east-1:12345:MyTopic-ABCDE'
       )
     end
+  end
+end
+
+RSpec.describe ChefVaultTryNotify::GuardHelper do
+  it 'should provide the vault_available? helper' do
+    expect(TestGuardHelper.new).to respond_to(:vault_available?)
+  end
+
+  it 'should use the guardstate singleton' do
+    ok = ChefVaultTryNotify::GuardState.instance.ok
+    ok['foo'] = true
+    tgh = TestGuardHelper.new
+    expect(tgh.vault_available?('foo')).to be true
+    expect(tgh.vault_available?('bar')).to be false
   end
 end

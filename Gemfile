@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 group :development do
-  gem 'rake', '~> 10.3'
+  gem 'rake', '~> 10.4'
   gem 'pry'
   gem 'pry-byebug'
   gem 'pry-rescue', '~> 1.3'
@@ -15,11 +15,9 @@ group :test do
   gem 'test-kitchen', '~> 1.4'
   gem 'kitchen-vagrant', '~> 0.16'
   gem 'berkshelf', '~> 3.2'
-  # pin to 2.8 series until guard-foodcritic has been updated for v2 API
-  gem 'guard', '~> 2.8.2'
-  # pin to 4.3 series until guard-foodcritic has been updated for v2 API
-  gem 'guard-rspec', '~> 4.3.1'
-  gem 'guard-foodcritic', '~> 1.0'
+  gem 'guard', '~> 2.12'
+  gem 'guard-rspec', '~> 4.5'
+  gem 'guard-foodcritic', '~> 1.1'
   gem 'guard-rake', '~> 0.0'
   gem 'rubocop', '~> 0.28.0'
   gem 'guard-rubocop', '~> 1.1'

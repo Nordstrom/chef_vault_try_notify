@@ -54,4 +54,15 @@ module ChefVaultTryNotify
       }.to_json
     end
   end
+
+  # helpers for the vault_available? guard
+  module GuardHelper
+    # a guard that succeeds if the vault can be decrypted
+    # @param set [String] the secret name previously used to name
+    #   a chef_vault_try_notify resource
+    # @return [Boolean] whether the secrets are available
+    def vault_available?(set)
+      ChefVaultTryNotify::GuardState.instance.ok.key?(set)
+    end
+  end
 end
