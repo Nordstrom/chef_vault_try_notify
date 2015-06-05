@@ -18,17 +18,19 @@ module ChefVaultTryNotify
     # @return [void]
     def sns_notify(node, state, opts)
       require 'aws-sdk'
-      opts[:region] ||= az_from_placement(node['ec2']['placement_availability_zone'])
-      args = { region: opts[:region] }
-      args[:credentials] = opts[:credentials] if opts.key?(:credentials)
-      client = Aws::SNS::Client.new(args)
-      resp = client.publish(
-        topic_arn: opts[:topic],
-        message: notification_json(node, state)
-      )
-      Chef::Log.info "notified #{opts[:topic]} with message id #{resp[:message_id]}"
-    rescue Aws::SNS::Errors::ServiceError => e
-      Chef::Log.warn "unable to send SNS notification: #{e}"
+      begin
+        opts[:region] ||= az_from_placement(node['ec2']['placement_availability_zone'])
+        args = { region: opts[:region] }
+        args[:credentials] = opts[:credentials] if opts.key?(:credentials)
+        client = Aws::SNS::Client.new(args)
+        resp = client.publish(
+          topic_arn: opts[:topic],
+          message: notification_json(node, state)
+        )
+        Chef::Log.info "notified #{opts[:topic]} with message id #{resp[:message_id]}"
+      rescue Aws::SNS::Errors::ServiceError => e
+        Chef::Log.warn "unable to send SNS notification: #{e}"
+      end
     end
 
     private

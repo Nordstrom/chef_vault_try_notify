@@ -9,6 +9,6 @@ maintainer       'Nordstrom, Inc.'
 maintainer_email 'techcheftm@nordstrom.com'
 license          'MIT'
 description      'test if chef-vault items can be decrypted at runtime'
-version          '0.2.0'
+version          '0.2.1'
 
 depends          'chef-vault', '~> 1.3'
