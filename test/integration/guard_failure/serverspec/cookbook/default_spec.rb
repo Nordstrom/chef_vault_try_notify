@@ -5,7 +5,7 @@
 require 'spec_helper'
 
 describe file('/tmp/secrets_ok') do
-  it { should be_file }
+  it { should_not be_file }
 end
 
 describe file('/tmp/secrets_failure') do

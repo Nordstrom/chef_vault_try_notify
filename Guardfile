@@ -38,7 +38,7 @@ guard :rspec, all_on_start: true, cmd: "bundle exec #{rspec_command}" do
   watch(%r{^resources/.+\.rb$})     { 'spec' }
   watch(%r{^providers/.+\.rb$})     { 'spec' }
   watch(%r{^libraries/.+\.rb$})     { 'spec' }
-  watch(%r{^recipes/(.+)\.rb$})     { |m| "spec/cookbooks/chef_vault_try_notify/recipes/#{m[1]}_spec.rb" }
+  watch(%r{^recipes/(.+)\.rb$})     { |m| "spec/cookbooks/chef_vault_try_notify/#{m[1]}_spec.rb" }
 end
 
 # load local overrides
