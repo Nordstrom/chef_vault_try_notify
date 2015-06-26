@@ -47,7 +47,7 @@ sets the groundwork for a more secure version of the third approach.
 The LWRP supports two usage patterns
 
 * Test / Notify / Retry / Fail
-* Test / Remember / Guard
+* Test / Remember / Predicate
 
 ### General
 
@@ -105,40 +105,32 @@ The intent is that the notification will trigger some process to refresh
 the vault items, and that the subsequent attempts to decrypt will be
 successful.
 
-Nordstrom is developing an open-source tool to perform this refresh for
-nodes in the AWS infrastructure, but this is a separate tool.  When it
-is available, this cookbook will be updated to link to it.  For now, you
-can develop a bespoke tool to perform the same task, or put a manual
-process behind the notification (an email to an operator).  If the
-refresh process is human-driven, you will probably want to change the
-wait period and timeout to avoid getting 30 emails every time an node is
-autoscaled.
-
 ### Test / Remember / Guard
 
-In the second case, which is enabled by setting the `guard` attribute of
-the resource to true, the resource attempts to decrypt the secrets,
-storing the result of the attempt in a state object.  A guard function
-`vault_available?` is provided that lets you decide whether to include a
-given resource or recipe based on the availability of vault items.
+In the second case, which is enabled by setting the `test_and_remember`
+attribute of the resource to true, the resource attempts to decrypt the
+secrets, storing the result of the attempt in a state object.  A
+predicate function `vault_available?` is provided that lets you decide
+whether to include a given resource or recipe based on the availability
+of vault items.
 
-Prior to the point where you need the guard, declare a resource to test
+Prior to the point where you need the predicate, declare a resource to test
 if the secrets are available:
 
     chef_vault_try_notify 'web server secrets' do
       vault_items ['foo/bar', 'baz/wibble']
-      guard true
+      test_and_remember true
     end
 
-At some point thereafter, you can use the `vault_available?` guard,
-either in a resource with lazy attributes:
+At some point thereafter, you can use the `vault_available?` predicate,
+either in a guard block:
 
     file '/path/to/file' do
       content lazy { chef_vault_item('foo', 'bar')['password'] }
       only_if { vault_available?('web server secrets') }
     end
 
-Or to decide whether to include a recipe:
+Or as part of your recipe control flow:
 
     if vault_available?('web server secrets')
       include_recipe "#{cookbook_name}::_secrets"
@@ -151,7 +143,7 @@ Or to decide whether to include a recipe:
 The default recipe includes the `chef-vault::default` recipe, which
 installs the `chef-vault` gem.
 
-It also includes the guard helper into `Chef::Recipe` and
+It also includes the `vault_available?` helper into `Chef::Recipe` and
 `Chef::Resource`.
 
 ## Attributes
@@ -183,7 +175,7 @@ The resource has the following parameters:
 * max_tries: the maximum number of times to attempt decryption.  Defaults to 30
 * wait_period: how long (in seconds) to wait between attempts to decrypt.  Defaults to 10
 * on_failure: a ruby block that will be called if any of the vault items cannot be decrypted.  It is passed a state object (described below)
-* guard: enables the guard-remembering mode, in which decryption is attempted once and the result remembered for use later in the `vault_available?` guard.  In this mode, the `max_tries`, `wait_period` and `on_failure` attributes are not used
+* test_and_remember: enables a single-pass test-and-remember mode, in which decryption is attempted and the result remembered for use later in the `vault_available?` predicate.  In this mode, the `max_tries`, `wait_period` and `on_failure` attributes are not used
 
 #### Ruby Block Context
 

@@ -36,20 +36,31 @@ action :test_secrets do
           chef_vault_item(bag, item)
         rescue ChefVault::Exceptions
           state.failed_vault_items.push viname
+        # this code only supports a specific Test-Kitchen suite and
+        # should never be encountered during normal use.  See the
+        # commands in .kitchen.yml for more
+        # rescue RuntimeError => e
+        #   if e.message.match(/databag_fallback is disabled/)
+        #     state.failed_vault_items.push viname
+        #   else
+        #     raise
+        #   end
         end
       end
       if state.failed_vault_items.empty?
         ::ChefVaultTryNotify::GuardState.instance.ok[new_resource.name] = true
         done = true
       else
-        # if guard is true, we return on failure - the lack of an entry
-        # in the GuardState singleton is used later
-        return if new_resource.guard
-        Chef::Log.warn 'could not decrypt secrets for vault items ' \
-          "#{state.failed_vault_items.join(',')}"
-        state.waiting_for = (Time.now - start_time).to_i
-        new_resource.on_failure.call(state)
-        sleep new_resource.wait_period
+        # if guard is true, we're done
+        if new_resource.test_and_remember
+          done = true
+        else
+          Chef::Log.warn 'could not decrypt secrets for vault items ' \
+            "#{state.failed_vault_items.join(',')}"
+          state.waiting_for = (Time.now - start_time).to_i
+          new_resource.on_failure.call(state)
+          sleep new_resource.wait_period
+        end
       end
     end
   end

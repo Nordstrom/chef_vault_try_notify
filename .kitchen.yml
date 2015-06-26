@@ -43,3 +43,14 @@ suites:
   - name: guard
     run_list:
       - recipe[secret_waiter::guard]
+  # this suite only works if the provider is patched to catch the RuntimeError
+  # thrown when databg fallback is disabled
+  - name: guard_failure
+    run_list:
+      - recipe[secret_waiter::guard_failure]
+    attributes:
+      chef-vault:
+        databag_fallback: false
+  - name: predicate
+    run_list:
+      - recipe[secret_waiter::predicate]
