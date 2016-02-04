@@ -5,7 +5,7 @@
 
 require 'ostruct'
 
-include ChefVaultItem
+include ChefVaultCookbook
 
 provides :chef_vault_try_notify
 use_inline_resources

@@ -1,5 +1,10 @@
 # Revision History for chef_vault_try_notify
 
+## 0.3.1
+
+* replace 'include ChefVaultItem' with 'include ChefVaultCookbook' to reflect
+change in chef-vault cookbook 1.3.1
+
 ## 0.3.0
 
 * fix the predicate use of the guard state helper (it could throw a LocalJumpError exception previously)
