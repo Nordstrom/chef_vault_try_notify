@@ -1,9 +1,11 @@
 # Revision History for chef_vault_try_notify
 
-## 0.3.1
+## 0.4.0
 
 * replace 'include ChefVaultItem' with 'include ChefVaultCookbook' to reflect
 change in chef-vault cookbook 1.3.1
+* fix specs
+* Switch from MIT to Apache 2.0 license
 
 ## 0.3.0
 

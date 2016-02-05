@@ -1,7 +1,7 @@
 include_recipe 'chef_vault_try_notify'
 
 chef_vault_try_notify 'my_secrets' do
-  vault_items %w(foo/bar baz/gzonk)
+  vault_items %w(passwords_data_bag/admin_data_bag_item)
   max_tries 2
   wait_period 1
   on_failure do |state|

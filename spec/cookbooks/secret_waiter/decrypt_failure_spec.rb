@@ -5,29 +5,20 @@ RSpec.describe 'secret_waiter::decrypt_failure' do
     ).converge(described_recipe)
   end
 
-  it 'calls the on_failure block if the secrets canot be decrypted' do
-    bag = double 'data bag'
-    %w(bar gzonk).each do |itemname|
-      expect(bag).to receive(:key?)
-        .at_least(:once)
-        .with("#{itemname}_keys")
-        .and_return(true)
-      expect(bag)
-        .to receive(:[])
-        .with("#{itemname}_keys")
-        .at_least(:once)
-        .and_raise(ChefVault::Exceptions::SecretDecryption)
-    end
-    %w(foo baz).each do |bagname|
-      expect(Chef::DataBag)
-        .to receive(:load)
-        .at_least(:once)
-        .with(bagname)
-        .and_return(bag)
-    end
+  it 'calls the on_failure block if passwords_data_bag/admin_data_bag_item cannot be decrypted' do
+    allow(ChefVault::Item)
+      .to receive(:vault?)
+      .with('passwords_data_bag', 'admin_data_bag_item')
+      .and_return(true)
+
+    allow(ChefVault::Item)
+      .to receive(:load)
+      .with('passwords_data_bag', 'admin_data_bag_item')
+      .and_raise(ChefVault::Exceptions::SecretDecryption)
+
     expect(Chef::Log)
       .to receive(:warn)
-      .at_least(:once)
+      .twice # because we're retrying 2x, each failure gets a chance to notify
       .with(/this is where we would send an SNS notification/)
     expect(Chef::Log)
       .to receive(:warn)
