@@ -10,7 +10,7 @@ end
 
 group :test do
   gem 'foodcritic', '~> 4.0'
-  gem 'chefspec', '~> 4.2'
+  gem 'chefspec', '~> 4.2', '>= 4.2.0'
   gem 'ci_reporter_rspec', '~> 1.0'
   gem 'test-kitchen', '~> 1.4'
   gem 'kitchen-vagrant', '~> 0.16'
