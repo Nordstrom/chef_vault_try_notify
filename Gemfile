@@ -14,7 +14,7 @@ group :test do
   gem 'ci_reporter_rspec', '~> 1.0'
   gem 'test-kitchen', '~> 1.4'
   gem 'kitchen-vagrant', '~> 0.16'
-  gem 'berkshelf', '~> 4.0'
+  gem 'berkshelf', '~> 4.2', '>= 4.2.3'
   gem 'guard', '~> 2.12'
   gem 'guard-rspec', '~> 4.5'
   gem 'guard-foodcritic', '~> 1.1'
