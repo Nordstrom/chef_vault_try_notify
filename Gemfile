@@ -9,7 +9,7 @@ group :development do
 end
 
 group :test do
-  gem 'foodcritic', '~> 4.0'
+  gem 'foodcritic', '~> 4.0', '>= 4.0.0'
   gem 'chefspec', '~> 4.2'
   gem 'ci_reporter_rspec', '~> 1.0'
   gem 'test-kitchen', '~> 1.4'
@@ -17,7 +17,7 @@ group :test do
   gem 'berkshelf', '~> 4.0'
   gem 'guard', '~> 2.12'
   gem 'guard-rspec', '~> 4.5'
-  gem 'guard-foodcritic', '~> 1.1'
+  gem 'guard-foodcritic', '~> 1.1', '>= 1.1.0'
   gem 'guard-rake', '~> 0.0'
   gem 'rubocop', '~> 0.28.0'
   gem 'guard-rubocop', '~> 1.1'
